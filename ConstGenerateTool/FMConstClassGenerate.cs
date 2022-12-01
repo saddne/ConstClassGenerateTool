@@ -28,11 +28,19 @@ namespace ConstGenerateTool
         {
             lblA.Text = Enum.RegexExample.A + "\r\n" + "（例：A:1|成功；B:2|失败）";
             lblB.Text = Enum.RegexExample.B + "\r\n" + "（例：A:1;B:2）";
+            txtRegex.Text = Enum.RegexExample.A;
+
+            var cbxTypeSource = new List<KeyValuePair<string, string>>();
+            cbxTypeSource.Add(new KeyValuePair<string, string>("", "--请选择--"));
+            cbxTypeSource.AddRange(Enum.PropertyType.GetList());
+            cbxType.DataSource = cbxTypeSource;
+            cbxType.DisplayMember = "Value";
+            cbxType.ValueMember = "Key";
         }
 
         #endregion
 
-        #region Button
+        #region Event
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
@@ -42,12 +50,20 @@ namespace ConstGenerateTool
                 return;
             }
 
-            rtxtFinalConst.Text = ConstGenerateUtil.CreateConstClassProperties(txtClassName.Text, txtClassSummary.Text, txtPre.Text, properties);
+            var generateResult = ConstGenerateUtil.CreateConstClassProperties(txtClassName.Text, cbxType.SelectedValue.ToString(), txtPre.Text, properties);
+            if (generateResult == null)
+            {
+                return;
+            }
+
+            rtxtFinalConst.Text = generateResult.ConstClassString;
+            if (string.IsNullOrEmpty(cbxType.SelectedValue.ToString()))
+            {
+                cbxType.SelectedValue = generateResult.PropertyType;
+            }
         }
 
-        #endregion
-
-        private void LblRegex_DoubleClick(object sender, EventArgs e)
+        private void lblRegex_Click(object sender, EventArgs e)
         {
             var tag = ((Label)sender).Tag;
             switch (tag)
@@ -62,5 +78,7 @@ namespace ConstGenerateTool
                     break;
             }
         }
+
+        #endregion
     }
 }

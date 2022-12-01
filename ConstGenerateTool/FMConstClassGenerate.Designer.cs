@@ -40,9 +40,9 @@
             this.btnGenerate = new System.Windows.Forms.Button();
             this.txtPre = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.txtClassSummary = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.lblB = new System.Windows.Forms.Label();
+            this.cbxType = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // rtxtFinalConst
@@ -85,9 +85,9 @@
             // 
             this.txtRegex.Location = new System.Drawing.Point(109, 59);
             this.txtRegex.Name = "txtRegex";
-            this.txtRegex.Size = new System.Drawing.Size(562, 21);
+            this.txtRegex.Size = new System.Drawing.Size(612, 21);
             this.txtRegex.TabIndex = 6;
-            this.txtRegex.Text = "([a-zA-Z\\d]+):([a-zA-Z\\d]+)\\|([^;；:\\|]*)";
+            this.txtRegex.Text = "([a-zA-Z\\d]+):([a-zA-Z\\d]+)\\|([^;；:\\|\\s]*)";
             // 
             // label4
             // 
@@ -103,11 +103,11 @@
             this.lblA.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.lblA.Location = new System.Drawing.Point(107, 83);
             this.lblA.Name = "lblA";
-            this.lblA.Size = new System.Drawing.Size(251, 28);
+            this.lblA.Size = new System.Drawing.Size(365, 28);
             this.lblA.TabIndex = 8;
             this.lblA.Tag = "A";
-            this.lblA.Text = "([a-zA-Z\\d]+):([a-zA-Z\\d]+)\\|([^;；:\\|]*)\r\n（例：A:1|成功；B:2|失败）";
-            this.lblA.DoubleClick += new System.EventHandler(this.LblRegex_DoubleClick);
+            this.lblA.Text = "([^\\s:：；;，,\\|]+):([^\\s:：；;，,\\|]+)\\|([^\\s:：；;，,\\|]+)\r\n（例：A:1|成功；B:2|失败）\r\n";
+            this.lblA.Click += new System.EventHandler(this.lblRegex_Click);
             // 
             // rtxtInput
             // 
@@ -138,56 +138,56 @@
             // 
             // txtPre
             // 
-            this.txtPre.Location = new System.Drawing.Point(571, 22);
+            this.txtPre.Location = new System.Drawing.Point(621, 22);
             this.txtPre.Name = "txtPre";
             this.txtPre.Size = new System.Drawing.Size(100, 21);
             this.txtPre.TabIndex = 12;
-            this.txtPre.Text = "C";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(524, 25);
+            this.label3.Location = new System.Drawing.Point(574, 25);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(41, 12);
             this.label3.TabIndex = 13;
             this.label3.Text = "前缀：";
             // 
-            // txtClassSummary
-            // 
-            this.txtClassSummary.Location = new System.Drawing.Point(314, 22);
-            this.txtClassSummary.Name = "txtClassSummary";
-            this.txtClassSummary.Size = new System.Drawing.Size(183, 21);
-            this.txtClassSummary.TabIndex = 14;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(255, 25);
+            this.label5.Location = new System.Drawing.Point(323, 24);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(53, 12);
+            this.label5.Size = new System.Drawing.Size(41, 12);
             this.label5.TabIndex = 15;
-            this.label5.Text = "类注释：";
+            this.label5.Text = "类型：";
             // 
             // lblB
             // 
             this.lblB.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.lblB.Location = new System.Drawing.Point(364, 83);
+            this.lblB.Location = new System.Drawing.Point(478, 83);
             this.lblB.Name = "lblB";
-            this.lblB.Size = new System.Drawing.Size(167, 28);
+            this.lblB.Size = new System.Drawing.Size(243, 28);
             this.lblB.TabIndex = 16;
             this.lblB.Tag = "B";
-            this.lblB.Text = "([a-zA-Z\\d]+):([a-zA-Z\\d]+)\r\n（例：A:1;B:2）";
-            this.lblB.DoubleClick += new System.EventHandler(this.LblRegex_DoubleClick);
+            this.lblB.Text = "([^\\s:：；;，,\\|]+):([^\\s:：；;，,\\|]+)\r\n（例：A:1;B:2）";
+            this.lblB.Click += new System.EventHandler(this.lblRegex_Click);
+            // 
+            // cbxType
+            // 
+            this.cbxType.FormattingEnabled = true;
+            this.cbxType.Location = new System.Drawing.Point(370, 22);
+            this.cbxType.Name = "cbxType";
+            this.cbxType.Size = new System.Drawing.Size(121, 20);
+            this.cbxType.TabIndex = 17;
             // 
             // FMConstClassGenerate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(767, 501);
+            this.Controls.Add(this.cbxType);
             this.Controls.Add(this.lblB);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.txtClassSummary);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtPre);
             this.Controls.Add(this.btnGenerate);
@@ -222,9 +222,9 @@
         private System.Windows.Forms.Button btnGenerate;
         private System.Windows.Forms.TextBox txtPre;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtClassSummary;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblB;
+        private System.Windows.Forms.ComboBox cbxType;
     }
 }
 

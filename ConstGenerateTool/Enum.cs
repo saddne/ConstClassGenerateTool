@@ -8,18 +8,32 @@ namespace ConstGenerateTool
 {
     public class Enum
     {
-        public class CbxType
+        public class PropertyType
         {
             public const string S = "string";
 
+            public const string C = "char";
+
             public const string I = "int";
+
+            private static readonly Dictionary<string, string> Names = new Dictionary<string, string>()
+            {
+                {S,"string" },
+                {C,"char" },
+                {I,"int" },
+            };
+
+            public static List<KeyValuePair<string, string>> GetList()
+            {
+                return Names.ToList(); ;
+            }
         }
 
         public class RegexExample
         {
-            public const string A = @"([a-zA-Z\d]+):([a-zA-Z\d]+)\|([^;；:\|]*)";
+            public const string A = @"([^\s:：；;，,\|]+):([^\s:：；;，,\|]+)\|([^\s:：；;，,\|]+)";
 
-            public const string B = @"([a-zA-Z\d]+):([a-zA-Z\d]+)";
+            public const string B = @"([^\s:：；;，,\|]+):([^\s:：；;，,\|]+)";
         }
     }
 }

@@ -17,7 +17,7 @@ namespace ConstGenerateTool
         /// 生成常量类
         /// </summary>
         /// <returns></returns>
-        public static string CreateConstClassProperties(string className, string classDText, string preText, List<ConstProperty> properties)
+        public static GenerateResoult CreateConstClassProperties(string className, string propertyType, string preText, List<ConstProperty> properties)
         {
             // 类名
             if (string.IsNullOrEmpty(className))
@@ -26,16 +26,16 @@ namespace ConstGenerateTool
                 return null;
             }
 
-            // 类注释（注释为空则使用类名作为注释）
-            if (string.IsNullOrEmpty(classDText))
+            if (string.IsNullOrEmpty(propertyType))
             {
-                classDText = className;
-            }
-
-            var propertyType = "string";
-            if (properties.All(p => Regex.IsMatch(p.Value, @"^[0\d]*$"))) // 属性列表中的值都是数字
-            {
-                propertyType = "int";
+                if (properties.All(p => Regex.IsMatch(p.Value, @"^[0\d]*$"))) // 属性列表中的值都是数字
+                {
+                    propertyType = Enum.PropertyType.I;
+                }
+                else
+                {
+                    propertyType = Enum.PropertyType.S;
+                }
             }
             if (properties.All(p => Regex.IsMatch(p.Key, @"^[0\d]*$"))) // Key都为数字
             {
@@ -46,7 +46,7 @@ namespace ConstGenerateTool
             }
 
             string summary = "/// <summary>";
-            string summaryText = string.Format("/// {0}", classDText);
+            string summaryText = string.Format("/// ");
             string endSummary = "/// </summary>";
             string classNameStr = string.Format("public class {0}", className);
             string lBbrace = "{";
@@ -58,13 +58,17 @@ namespace ConstGenerateTool
             string blankEndSummary = "    /// </summary>";
             string blankSummaryValueFormat = "    /// {0}";
             string constPropertyFormat = "";
-            if (propertyType == Enum.CbxType.S)
+            if (propertyType == Enum.PropertyType.S)
             {
-                constPropertyFormat = "    public const " + propertyType + " {0} = \"{1}\";";
+                constPropertyFormat = "    public const " + propertyType + " " + preText + "{0} = \"{1}\";";
             }
-            else if (propertyType == Enum.CbxType.I)
+            else if (propertyType == Enum.PropertyType.I)
             {
-                constPropertyFormat = "    public const " + propertyType + " {0} = {1};";
+                constPropertyFormat = "    public const " + propertyType + " " + preText + "{0} = {1};";
+            }
+            else if (propertyType == Enum.PropertyType.C)
+            {
+                constPropertyFormat = "    public const " + propertyType + " " + preText + "{0} = \"{1}\";";
             }
 
             StringBuilder sBuilder = new StringBuilder();
@@ -86,10 +90,7 @@ namespace ConstGenerateTool
 
             #region Names
 
-            //sBuilder.AppendLine(blankNotes);
-            //sBuilder.AppendLine(string.Format(blankNotesValueFormat, "字典对照"));
-            //sBuilder.AppendLine(blankNotes);
-            sBuilder.AppendLine(string.Format("    public static readonly Dictionary<{0},string> Names = new Dictionary<{0},string>()", propertyType));
+            sBuilder.AppendLine(string.Format("    private static readonly Dictionary<{0},string> Names = new Dictionary<{0},string>()", propertyType));
             sBuilder.AppendLine(blankLBrace);
             foreach (var property in properties)
             {
@@ -134,7 +135,10 @@ namespace ConstGenerateTool
 
             sBuilder.Append(rbrace);
 
-            return sBuilder.ToString();
+            GenerateResoult result = new GenerateResoult();
+            result.ConstClassString = sBuilder.ToString();
+            result.PropertyType = propertyType;
+            return result;
         }
 
         /// <summary>
@@ -143,14 +147,14 @@ namespace ConstGenerateTool
         /// <returns></returns>
         public static List<ConstProperty> ConvertTextToPropertyList(string regexText, string inputText)
         {
-            regexText = regexText.Replace(" ", "").Trim();
+            regexText = regexText.Trim();
             if (string.IsNullOrEmpty(regexText))
             {
                 MessageBox.Show("正则表达式不可为空！");
                 return null;
             }
 
-            inputText = inputText.Replace(" ", "").Trim();
+            inputText = inputText.Trim();
             if (string.IsNullOrEmpty(inputText))
             {
                 MessageBox.Show("输入内容不可为空！");
@@ -162,15 +166,15 @@ namespace ConstGenerateTool
             {
                 if (regexText.Equals(Enum.RegexExample.A))
                 {
-                    #region ([a-zA-Z\d]+):([a-zA-Z\d]+)\|([^;；:\|]*)
+                    #region A
 
-                    if (!Regex.IsMatch(inputText, @"([a-zA-Z\d]+):([a-zA-Z\d]+)\|([^;；:\|]*)"))
+                    if (!Regex.IsMatch(inputText, Enum.RegexExample.A))
                     {
                         MessageBox.Show("输入内容与正则表达式不匹配！");
                         return null;
                     }
 
-                    var list = Regex.Matches(inputText, @"([a-zA-Z\d]+):([a-zA-Z\d]+)\|([^;；:\|]*)");
+                    var list = Regex.Matches(inputText, Enum.RegexExample.A);
                     foreach (Match match in list)
                     {
                         properties.Add(new ConstProperty
@@ -185,15 +189,15 @@ namespace ConstGenerateTool
                 }
                 else if (regexText.Equals(Enum.RegexExample.B))
                 {
-                    #region ([a-zA-Z\d]+):([a-zA-Z\d]+)
+                    #region B
 
-                    if (!Regex.IsMatch(inputText, @"([a-zA-Z\d]+):([a-zA-Z\d]+)"))
+                    if (!Regex.IsMatch(inputText, Enum.RegexExample.B))
                     {
                         MessageBox.Show("输入内容与正则表达式不匹配！");
                         return null;
                     }
 
-                    var list = Regex.Matches(inputText, @"([a-zA-Z\d]+):([a-zA-Z\d]+)");
+                    var list = Regex.Matches(inputText, Enum.RegexExample.B);
                     foreach (Match item in list)
                     {
                         properties.Add(new ConstProperty
@@ -216,13 +220,13 @@ namespace ConstGenerateTool
                         return null;
                     }
 
-                    if (!Regex.IsMatch(inputText, @"([a-zA-Z\d]+):([a-zA-Z\d]+)\|?([^;；:\|]*)"))
+                    if (!Regex.IsMatch(inputText, regexText))
                     {
                         MessageBox.Show("输入内容与正则表达式不匹配！");//若确认无错误，则联系开发者查看代码是否有bug
                         return null;
                     }
 
-                    var list = Regex.Matches(inputText, @"([a-zA-Z\d]+):([a-zA-Z\d]+)\|?([^;；:\|]*)");
+                    var list = Regex.Matches(inputText, regexText);
                     foreach (Match match in list)
                     {
                         properties.Add(new ConstProperty
@@ -251,6 +255,22 @@ namespace ConstGenerateTool
             public string Value { get; set; }
 
             public string DText { get; set; }
+        }
+
+        /// <summary>
+        /// 生成数据的结果
+        /// </summary>
+        public class GenerateResoult
+        {
+            /// <summary>
+            /// 生成的常量类字符串
+            /// </summary>
+            public string ConstClassString { get; set; }
+
+            /// <summary>
+            /// 属性的类型
+            /// </summary>
+            public string PropertyType { get; set; }
         }
     }
 }
