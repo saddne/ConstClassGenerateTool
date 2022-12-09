@@ -20,3 +20,6 @@ E:\Job\GDXX\MyTools\ConstClassGenerateTool\ConstGenerateTool\obj\Debug\ConstGene
 E:\Job\GDXX\MyTools\ConstClassGenerateTool\ConstGenerateTool\obj\Debug\ConstGenerateTool.csproj.CoreCompileInputs.cache
 E:\Job\GDXX\MyTools\ConstClassGenerateTool\ConstGenerateTool\obj\Debug\ConstGenerateTool.exe
 E:\Job\GDXX\MyTools\ConstClassGenerateTool\ConstGenerateTool\obj\Debug\ConstGenerateTool.pdb
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\ConstGenerateTool\obj\Debug\ConstGenerateTool.csproj.CopyComplete
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\ConstGenerateTool\bin\Debug\Business.dll
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\ConstGenerateTool\bin\Debug\Business.pdb

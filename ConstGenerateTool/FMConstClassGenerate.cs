@@ -7,11 +7,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Business.Enum;
+using Business.ConstClass;
+using Business.RegexConfig;
+using System.IO;
 
 namespace ConstGenerateTool
 {
     public partial class FMConstClassGenerate : Form
     {
+        #region PropertiesInfo
+
+        private RegexModel _RegexModel;
+
+        #endregion
+
         #region Win
 
         public FMConstClassGenerate()
@@ -20,22 +30,50 @@ namespace ConstGenerateTool
         }
 
         private void FMConstClassGenerate_Load(object sender, EventArgs e)
-        {                 
+        {
+            _RegexModel = new RegexModel();
+            _RegexModel.FilePath = Path.Combine(Application.StartupPath, FileName.RegexSaveFileName);
+            _RegexModel.GetRegexFieldList();
+
             InitForm();
         }
 
         private void InitForm()
         {
-            lblA.Text = Enum.RegexExample.A + "\r\n" + "（例：A:1|成功；B:2|失败）";
-            lblB.Text = Enum.RegexExample.B + "\r\n" + "（例：A:1;B:2）";
-            txtRegex.Text = Enum.RegexExample.A;
+            lblA.Text = RegexExample.A + "\r\n" + "S:系统,U:用户";
+            lblB.Text = RegexExample.B + "\r\n" + "S:1|系统,U:2|用户";
+            txtRegex.Text = RegexExample.A;
 
-            var cbxTypeSource = new List<KeyValuePair<string, string>>();
-            cbxTypeSource.Add(new KeyValuePair<string, string>("", "--请选择--"));
-            cbxTypeSource.AddRange(Enum.PropertyType.GetList());
-            cbxType.DataSource = cbxTypeSource;
-            cbxType.DisplayMember = "Value";
-            cbxType.ValueMember = "Key";
+            var cbxSelectedTypeSource = new List<KeyValuePair<string, string>>();
+            cbxSelectedTypeSource.Add(new KeyValuePair<string, string>("", "--请选择--"));
+            cbxSelectedTypeSource.AddRange(PropertyType.GetList());
+            cbxSelectedType.DataSource = cbxSelectedTypeSource;
+            cbxSelectedType.DisplayMember = "Value";
+            cbxSelectedType.ValueMember = "Key";
+
+            RefreshForm();
+        }
+
+        private void RefreshForm()
+        {
+            if (_RegexModel.RegexFieldList != null && _RegexModel.RegexFieldList.Count > 0)
+            {
+                grBRegex.Visible = true;
+
+                var cbxMyRegexSource = new List<KeyValuePair<string, string>>();
+                cbxMyRegexSource.Add(new KeyValuePair<string, string>("", "--请选择--"));
+                foreach (var item in _RegexModel.RegexFieldList)
+                {
+                    cbxMyRegexSource.Add(new KeyValuePair<string, string>(item.RegexText, item.RegexText));
+                }
+                cbxMyRegex.DataSource = cbxMyRegexSource;
+                cbxMyRegex.DisplayMember = "Value";
+                cbxMyRegex.ValueMember = "Key";
+            }
+            else
+            {
+                grBRegex.Visible = false;
+            }
         }
 
         #endregion
@@ -44,22 +82,70 @@ namespace ConstGenerateTool
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
-            var properties = ConstGenerateUtil.ConvertTextToPropertyList(txtRegex.Text, rtxtInput.Text);
-            if (properties == null || properties.Count == 0)
+            var fieldPattern = new FieldPattern
             {
-                return;
+                FieldPrefix = txtPre.Text,
+                FieldType = cbxSelectedType.SelectedValue.ToString(),
+                FieldNamePattern = txtFieldName.Text,
+                FieldValuePattern = txtFieldValue.Text,
+                FieldSummaryPattern = txtFieldSummary.Text,
+            };
+
+            var paraModel = new ConstClassParamModel
+            {
+                InputString = txtInput.Text,
+                RegexPattern = txtRegex.Text,
+                CustomFieldPattern = fieldPattern,
+                ClassName = txtClassName.Text,
+            };
+
+            var result = ConstClassGenerator.Generate(paraModel);
+
+            txtDefaultType.Text = paraModel.GeneratedFieldType;
+
+            #region 属性
+
+            paraModel.CustomFieldPattern.FieldNamePattern = !string.IsNullOrEmpty(paraModel.CustomFieldPattern.FieldNamePattern) ? paraModel.CustomFieldPattern.FieldNamePattern : paraModel.GenerateFieldPattern.FieldNamePattern;
+            txtFieldName.Text = paraModel.CustomFieldPattern.FieldNamePattern;
+            if (!paraModel.GenerateFieldPattern.FieldNamePattern.Equals(paraModel.CustomFieldPattern.FieldNamePattern))
+            {
+                txtFieldName.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            }
+            else
+            {
+                txtFieldName.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             }
 
-            var generateResult = ConstGenerateUtil.CreateConstClassProperties(txtClassName.Text, cbxType.SelectedValue.ToString(), txtPre.Text, properties);
-            if (generateResult == null)
+            paraModel.CustomFieldPattern.FieldValuePattern = !string.IsNullOrEmpty(paraModel.CustomFieldPattern.FieldValuePattern) ? paraModel.CustomFieldPattern.FieldValuePattern : paraModel.GenerateFieldPattern.FieldValuePattern;
+            txtFieldValue.Text = paraModel.CustomFieldPattern.FieldValuePattern;
+            if (!paraModel.GenerateFieldPattern.FieldValuePattern.Equals(paraModel.CustomFieldPattern.FieldValuePattern))
             {
-                return;
+                txtFieldValue.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            }
+            else
+            {
+                txtFieldValue.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             }
 
-            rtxtFinalConst.Text = generateResult.ConstClassString;
-            if (string.IsNullOrEmpty(cbxType.SelectedValue.ToString()))
+            paraModel.CustomFieldPattern.FieldSummaryPattern = !string.IsNullOrEmpty(paraModel.CustomFieldPattern.FieldSummaryPattern) ? paraModel.CustomFieldPattern.FieldSummaryPattern : paraModel.GenerateFieldPattern.FieldSummaryPattern;
+            txtFieldSummary.Text = paraModel.CustomFieldPattern.FieldSummaryPattern;
+            if (!paraModel.GenerateFieldPattern.FieldSummaryPattern.Equals(paraModel.CustomFieldPattern.FieldSummaryPattern))
             {
-                cbxType.SelectedValue = generateResult.PropertyType;
+                txtFieldSummary.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            }
+            else
+            {
+                txtFieldSummary.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            }
+
+            #endregion
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                rtxtFinalConst.Text = result;
+
+                Clipboard.SetDataObject(result);
+                MessageBox.Show("已复制");
             }
         }
 
@@ -69,13 +155,66 @@ namespace ConstGenerateTool
             switch (tag)
             {
                 case "A":
-                    txtRegex.Text = Enum.RegexExample.A;
+                    txtRegex.Text = RegexExample.A;
                     break;
                 case "B":
-                    txtRegex.Text = Enum.RegexExample.B;
+                    txtRegex.Text = RegexExample.B;
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(rtxtFinalConst.Text))
+            {
+                Clipboard.SetDataObject(rtxtFinalConst.Text);
+                MessageBox.Show("已复制");
+            }
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            var saveRegex = txtRegex.Text.Trim();
+
+            _RegexModel.Validation(saveRegex, true);
+
+            _RegexModel.RegexFieldList.Add(new RegexField { RegexText = saveRegex });
+
+            _RegexModel.Save();
+            MessageBox.Show("保存成功");
+
+            RefreshForm();
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            var deleteRegex = cbxMyRegex.SelectedValue.ToString().Trim();
+
+            _RegexModel.Validation(deleteRegex, false);
+
+            var regexField = _RegexModel.RegexFieldList.SingleOrDefault(p => p.RegexText == deleteRegex);
+            _RegexModel.RegexFieldList.Remove(regexField);
+
+            _RegexModel.Save();
+            MessageBox.Show("删除成功");
+
+            RefreshForm();
+        }
+
+        private void txtRegex_TextChanged(object sender, EventArgs e)
+        {
+            txtFieldName.Text = string.Empty;
+            txtFieldValue.Text = string.Empty;
+            txtFieldSummary.Text = string.Empty;
+        }
+
+        private void cbxMyRegex_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (cbxMyRegex.SelectedIndex != 0)
+            {
+                txtRegex.Text = cbxMyRegex.SelectedValue.ToString();
             }
         }
 

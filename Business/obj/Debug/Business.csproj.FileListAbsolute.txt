@@ -1,0 +1,12 @@
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business1\obj\Debug\Business.csproj.AssemblyReference.cache
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business1\obj\Debug\Business.csproj.CoreCompileInputs.cache
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business1\bin\Debug\Business1.dll
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business1\bin\Debug\Business1.pdb
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business1\obj\Debug\Business1.dll
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business1\obj\Debug\Business1.pdb
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business\obj\Debug\Business.csproj.AssemblyReference.cache
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business\obj\Debug\Business.csproj.CoreCompileInputs.cache
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business\bin\Debug\Business.dll
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business\bin\Debug\Business.pdb
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business\obj\Debug\Business.dll
+E:\Job\GDXX\MyTools\ConstClassGenerateTool\Business\obj\Debug\Business.pdb
